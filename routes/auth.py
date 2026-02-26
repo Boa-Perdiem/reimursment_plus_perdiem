@@ -99,7 +99,7 @@ def login():
 # -------------------------
 # REMOVE BACKGROUND FUNCTION
 # -------------------------
-from rembg import remove
+
 from PIL import Image
 import io
 
