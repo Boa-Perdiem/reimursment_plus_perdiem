@@ -36,7 +36,7 @@ flatbuffers==25.12.19
 fonttools==4.60.2
 fsspec==2025.10.0
 future==1.0.0
-greenlet==3.3.1
+greenlet==3.2.5
 h11==0.16.0
 h5py==3.15.1
 hf-xet==1.2.0
@@ -117,6 +117,7 @@ urllib3==2.6.3
 validators==0.35.0
 visualdl==2.5.3
 Werkzeug==3.1.5
+
 
 
 
