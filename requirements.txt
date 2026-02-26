@@ -1,5 +1,5 @@
 gunicorn==21.2.0
-alembic==1.18.3
+alembic==1.17.7 
 anyascii==0.3.3
 anyio==4.12.1
 astor==0.8.1
@@ -117,6 +117,7 @@ urllib3==2.6.3
 validators==0.35.0
 visualdl==2.5.3
 Werkzeug==3.1.5
+
 
 
 
