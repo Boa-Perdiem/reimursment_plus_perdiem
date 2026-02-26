@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Section 3 – Loans</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: #f4f6f9;
+            margin: 0;
+            color: #222;
+        }
+
+        header {
+            background: #1f2937;
+            color: white;
+            padding: 16px 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        .logout {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            padding: 28px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 22px;
+            margin-bottom: 26px;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+        }
+
+        .card h2 {
+            margin-top: 0;
+            font-size: 17px;
+            color: #111;
+        }
+
+        .readonly-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            font-size: 14px;
+        }
+
+        .readonly-grid span {
+            font-weight: 700;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+            font-size: 14px;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 44px;
+            padding: 8px;
+            font-size: 14px;
+            border-radius: 5px;
+            border: 1px solid #cbd5e1;
+            resize: vertical;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        /* ADDED (same styling logic as first file) */
+        .decision {
+            margin-bottom: 6px;
+            font-size: 13px;
+        }
+
+        .decision label {
+            display: inline;
+            font-weight: normal;
+            margin-right: 12px;
+        }
+
+        .btn {
+            background: #1f2937;
+            color: white;
+            border: none;
+            padding: 10px 22px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background: #374151;
+        }
+
+        .note {
+            margin-top: 12px;
+            font-size: 13px;
+            color: #555;
+        }
+    </style>
+
+    <!-- ADDED (same JS logic as first file) -->
+    <script>
+        function toggleField(radio, textareaId) {
+            const textarea = document.getElementById(textareaId);
+
+            if (radio.value === "yes") {
+                textarea.disabled = false;
+                textarea.required = true;
+                if (textarea.value === "N/A") {
+                    textarea.value = "";
+                }
+            } else {
+                textarea.value = "N/A";
+                textarea.disabled = true;
+                textarea.required = false;
+            }
+        }
+    </script>
+</head>
+<body>
+
+<header>
+    <h1>Section 3 – Loans</h1>
+    <a class="logout" href="{{ url_for('auth.logout') }}">Logout</a>
+</header>
+
+<div class="container">
+
+    <!-- SECTION 1 – READ ONLY -->
+    <div class="card">
+        <h2>Employee Information (Read Only)</h2>
+
+        <div class="readonly-grid">
+            <div><span>Employee Name:</span> {{ clearance.employee_name }}</div>
+            <div><span>Position Title:</span> {{ clearance.position_title }}</div>
+            <div><span>Place of Assignment:</span> {{ clearance.place_of_assignment }}</div>
+            <div><span>Termination Date:</span> {{ clearance.termination_date }}</div>
+        </div>
+    </div>
+
+    <!-- SECTION 3 INPUT FORM -->
+    <div class="card">
+        <h2>Loans IFB Clearance</h2>
+
+        <form method="POST">
+
+            <div class="form-group">
+                <label>IFB Financing Business:</label>
+
+                <!-- ADDED yes/no decision -->
+                <div class="decision">
+                    <label>
+                        <input type="radio"
+                               name="ifb_business_decision"
+                               value="yes"
+                               checked
+                               onclick="toggleField(this, 'ifb_bussiness_benefits')">
+                        Yes
+                    </label>
+
+                    <label>
+                        <input type="radio"
+                               name="ifb_business_decision"
+                               value="no"
+                               onclick="toggleField(this, 'ifb_bussiness_benefits')">
+                        No
+                    </label>
+                </div>
+
+                <!-- EXISTING textarea (only ID added for JS hook) -->
+                <textarea id="ifb_bussiness_benefits"
+                          name="ifb_bussiness_benefits"
+                          required></textarea>
+            </div>
+
+            <button class="btn" type="submit">
+                Approve Section 3 IFB
+            </button>
+        </form>
+
+        <div class="note">
+            Approver name, signature, and approval date are recorded automatically.
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

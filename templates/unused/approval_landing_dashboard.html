@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Approval Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            margin: 0;
+        }
+
+        .logout-btn {
+            padding: 8px 16px;
+            background: #c0392b;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .logout-btn:hover {
+            background: #a93226;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #ffffff;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        th {
+            background: #2c3e50;
+            color: white;
+        }
+
+        .button {
+            padding: 6px 14px;
+            background: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .approved {
+            color: green;
+            font-weight: bold;
+        }
+
+        .pending {
+            color: orange;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="top-bar">
+    <h2>Clearance Requests – Approval Dashboard</h2>
+    <a class="logout-btn" href="{{ url_for('auth.logout') }}">Logout</a>
+</div>
+
+<table>
+    <thead>
+        <tr>
+            <th>Clearance ID</th>
+            <th>Employee</th>
+            <th>Assignment</th>
+
+            {% if current_user.role in ["SECTION2", "ADMIN"] %}
+                <th>Section 2</th>
+            {% endif %}
+
+            {% if current_user.role in ["SECTION3", "ADMIN"] %}
+                <th>Section 3</th>
+            {% endif %}
+
+            {% if current_user.role in ["SECTION3IFB", "ADMIN"] %}
+                <th>Section 3 IFB</th>
+            {% endif %}
+
+            {% if current_user.role in ["SECTION3APOLLO", "ADMIN"] %}
+                <th>Section 3 APOLLO</th>
+            {% endif %}
+
+            {% if current_user.role in ["SECTION4", "ADMIN"] %}
+                <th>Section 4</th>
+            {% endif %}
+
+            {% if current_user.role in ["SECTION5", "ADMIN"] %}
+                <th>Section 5 WAREHOUSE</th>
+            {% endif %}
+
+            {% if current_user.role in ["SECTION5TRANS", "ADMIN"] %}
+                <th>Section 5 TRANSPORT</th>
+            {% endif %}
+
+            {% if current_user.role in ["SECTION5CREDITM", "ADMIN"] %}
+                <th>Section 5 CREDIT MANAGEMENT</th>
+            {% endif %}
+
+            <th>Action</th>
+        </tr>
+    </thead>
+
+    <tbody>
+    {% for clearance in clearances %}
+        <tr>
+            <td>{{ clearance.clearance_code }}</td>
+            <td>{{ clearance.employee_name }}</td>
+            <td>{{ clearance.place_of_assignment }}</td>
+
+            <!-- SECTION 2 -->
+            {% if current_user.role in ["SECTION2", "ADMIN"] %}
+                <td>
+                    {% if clearance.section2_approval %}
+                        <span class="approved">APPROVED</span>
+                    {% else %}
+                        <span class="pending">PENDING</span>
+                    {% endif %}
+                </td>
+            {% endif %}
+
+            <!-- SECTION 3 -->
+            {% if current_user.role in ["SECTION3", "ADMIN"] %}
+                <td>
+                    {% if clearance.section3_approval %}
+                        <span class="approved">APPROVED</span>
+                    {% else %}
+                        <span class="pending">PENDING</span>
+                    {% endif %}
+                </td>
+            {% endif %}
+
+            {% if current_user.role in ["SECTION3IFB", "ADMIN"] %}
+                <td>
+                    {% if clearance.section3ifb_approval %}
+                        <span class="approved">APPROVED</span>
+                    {% else %}
+                        <span class="pending">PENDING</span>
+                    {% endif %}
+                </td>
+            {% endif %}
+
+            {% if current_user.role in ["SECTION3APOLLO", "ADMIN"] %}
+                <td>
+                    {% if clearance.section3apollo_approval %}
+                        <span class="approved">APPROVED</span>
+                    {% else %}
+                        <span class="pending">PENDING</span>
+                    {% endif %}
+                </td>
+            {% endif %}
+
+            <!-- SECTION 4 -->
+            {% if current_user.role in ["SECTION4", "ADMIN"] %}
+                <td>
+                    {% if clearance.section4_approval %}
+                        <span class="approved">APPROVED</span>
+                    {% else %}
+                        <span class="pending">PENDING</span>
+                    {% endif %}
+                </td>
+            {% endif %}
+
+            <!-- SECTION 5 -->
+            {% if current_user.role in ["SECTION5", "ADMIN"] %}
+                <td>
+                    {% if clearance.section5_approval %}
+                        <span class="approved">APPROVED</span>
+                    {% else %}
+                        <span class="pending">PENDING</span>
+                    {% endif %}
+                </td>
+            {% endif %}
+
+            {% if current_user.role in ["SECTION5TRANS", "ADMIN"] %}
+                <td>
+                    {% if clearance.section5_transport_approval %}
+                        <span class="approved">APPROVED</span>
+                    {% else %}
+                        <span class="pending">PENDING</span>
+                    {% endif %}
+                </td>
+            {% endif %}
+
+            {% if current_user.role in ["SECTION5CREDITM", "ADMIN"] %}
+                <td>
+                    {% if clearance.section5_creditM_approval %}
+                        <span class="approved">APPROVED</span>
+                    {% else %}
+                        <span class="pending">PENDING</span>
+                    {% endif %}
+                </td>
+            {% endif %}
+
+            <!-- ACTION -->
+            <td>
+                {% if current_user.role == "SECTION2" %}
+                    {% if clearance.section2_approval %}
+                        <span class="approved">Reviewed</span>
+                    {% else %}
+                        <a class="button"
+                           href="{{ url_for('section2.section2_dashboard', clearance_id=clearance.id) }}">
+                            Review
+                        </a>
+                    {% endif %}
+
+                {% elif current_user.role == "SECTION3" %}
+                    {% if clearance.section3_approval %}
+                        <span class="approved">Reviewed</span>
+                    {% else %}
+                        <a class="button"
+                           href="{{ url_for('section3.section3_dashboard', clearance_id=clearance.id) }}">
+                            Review
+                        </a>
+                    {% endif %}
+
+                    {% elif current_user.role == "SECTION3IFB" %}
+                    {% if clearance.section3ifb_approval %}
+                        <span class="approved">Reviewed</span>
+                    {% else %}
+                        <a class="button"
+                           href="{{ url_for('section3ifb.section3ifb_dashboard', clearance_id=clearance.id) }}">
+                            Review
+                        </a>
+                    {% endif %}
+
+                    {% elif current_user.role == "SECTION3APOLLO" %}
+                    {% if clearance.section3apollo_approval %}
+                        <span class="approved">Reviewed</span>
+                    {% else %}
+                        <a class="button"
+                           href="{{ url_for('section3apollo.section3apollo_dashboard', clearance_id=clearance.id) }}">
+                            Review
+                        </a>
+                    {% endif %}
+
+                {% elif current_user.role == "SECTION4" %}
+                    {% if clearance.section4_approval %}
+                        <span class="approved">Reviewed</span>
+                    {% else %}
+                        <a class="button"
+                           href="{{ url_for('section4.section4_dashboard', clearance_id=clearance.id) }}">
+                            Review
+                        </a>
+                    {% endif %}
+
+                {% elif current_user.role == "SECTION5TRANS" %}
+                    {% if clearance.section5_transport_approval %}
+                        <span class="approved">Reviewed</span>
+                    {% else %}
+                        <a class="button"
+                           href="{{ url_for('section5trans.section5trans_dashboard', clearance_id=clearance.id) }}">
+                            Review
+                        </a>
+                    {% endif %}
+
+                {% elif current_user.role == "SECTION5CREDITM" %}
+                    {% if clearance.section5_creditM_approval %}
+                        <span class="approved">Reviewed</span>
+                    {% else %}
+                        <a class="button"
+                           href="{{ url_for('section5creditm.section5creditm_dashboard', clearance_id=clearance.id) }}">
+                            Review
+                        </a>
+                    {% endif %}
+
+                {% elif current_user.role == "SECTION5" %}
+                    {% if clearance.section5_approval %}
+                        <span class="approved">Reviewed</span>
+                    {% else %}
+                        <a class="button"
+                           href="{{ url_for('section5.section5_dashboard', clearance_id=clearance.id) }}">
+                            Review
+                        </a>
+                    {% endif %}
+
+                {% elif current_user.role == "ADMIN" %}
+                    <span>—</span>
+                {% endif %}
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+</body>
+</html>

@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Finance Processor Page - {{perdiem.perdiem_code}}</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: #f4f6f9;
+    margin: 0;
+    color: #222;
+}
+
+header {
+    background: #1f2937;
+    color: white;
+    padding: 16px 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 18px;
+}
+
+.logout {
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.container {
+    max-width: 1100px;
+    margin: auto;
+    padding: 28px;
+}
+
+.card {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+}
+
+.card h2 {
+    margin-top: 0;
+    font-size: 17px;
+    margin-bottom: 16px;
+}
+
+.readonly-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    font-size: 14px;
+}
+
+.readonly-grid span {
+    font-weight: 700;
+    display: block;
+    margin-bottom: 6px;
+}
+
+.pdf-container {
+    width: 100%;
+    height: 370px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    overflow: hidden;
+    background: #f9fafb;
+}
+
+iframe {
+    width: 200%;
+    height: 200%;
+    border: none;
+    transform: scale(0.5);
+    transform-origin: top left;
+}
+
+textarea {
+    width: 100%;
+    min-height: 44px;
+    padding: 8px;
+    font-size: 14px;
+    border-radius: 5px;
+    border: 1px solid #cbd5e1;
+    resize: vertical;
+    margin-top: 8px;
+    margin-bottom: 16px;
+}
+
+.btn {
+    color: #fff;
+    border: none;
+    padding: 12px 22px;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn-approve {
+    background: linear-gradient(135deg, #0f6a2d, #06c750);
+}
+
+.btn-decline {
+    background: linear-gradient(135deg, #8e1e1e, #ff3838);
+}
+
+.btn-group {
+    display: flex;
+    gap: 16px;
+}
+
+.note {
+    margin-top: 12px;
+    font-size: 13px;
+    color: #555;
+}
+
+.inline-radio label {
+    font-weight: 500;
+    margin-right: 14px;
+}
+</style>
+</head>
+<body>
+
+<header>
+    <h1>Finance Processor Page - {{perdiem.perdiem_code}}</h1>
+    <a class="logout" href="{{ url_for('auth.logout') }}">Logout</a>
+</header>
+
+<div class="container">
+
+    <!-- PDFs -->
+    <div class="card">
+        <div class="readonly-grid">
+            <div>
+                <span>Reimbursement Form</span>
+                <div class="pdf-container">
+                    <iframe src="{{ url_for('finance_processor.serve_pdf_db',
+                        request_id=perdiem.id,
+                        field='reimburs_form') }}">
+                    </iframe>
+                </div>
+            </div>
+
+            <div>
+                <span style="display:flex; align-items:center; gap:10px; font-size:16px;">
+                    Per Diem Form
+                    <a href="#" id="view-receipts-link"
+                       style="color: #16a34a; text-decoration: underline; font-size:16px;">
+                        View Receipts
+                    </a>
+                </span>
+                <div class="pdf-container">
+                    <iframe src="{{ url_for('finance_processor.serve_pdf_db',
+                        request_id=perdiem.id,
+                        field='perdi_form') }}">
+                    </iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Approval -->
+    <div class="card">
+        <h2>Final Approver Perdiem Approval</h2>
+
+        <form id="approval-form" method="POST" action="{{ url_for('finance_processor.finance_dashboard', request_id=perdiem.id) }}">
+            <label>
+                Comment :
+                <span class="inline-radio">
+                    <label><input type="radio" name="comment_decision" value="YES" checked> Yes</label>
+                    <label><input type="radio" name="comment_decision" value="NO"> No</label>
+                </span>
+            </label>
+            
+            <textarea id="comment-textarea" placeholder="Enter comment..." required></textarea>
+            <input type="hidden" name="comment" id="hidden-comment">
+
+            <div class="btn-group">
+                <button type="submit" class="btn btn-approve">Approve</button>
+                <button type="button" id="decline-btn" class="btn btn-decline">Decline</button>
+            </div>
+        </form>
+
+        <div class="note">
+            Approver name, signature, and approval date are recorded automatically.
+        </div>
+    </div>
+
+</div>
+
+<!-- Receipts Modal -->
+<div id="receipts-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; 
+    background: rgba(0,0,0,0.5); justify-content:center; align-items:center;">
+    <div style="background:white; border-radius:8px; padding:20px; width:500px; max-height:80%; overflow-y:auto;">
+        <h3>Receipts</h3>
+        <ul id="receipts-list" style="list-style:none; padding-left:0;"></ul>
+        <button id="close-receipts" style="margin-top:10px; padding:8px 12px; border:none; background:#16a34a; color:white; border-radius:5px; cursor:pointer;">Close</button>
+    </div>
+</div>
+
+<script>
+const radios = document.querySelectorAll('input[name="comment_decision"]');
+const textarea = document.getElementById('comment-textarea');
+const hiddenComment = document.getElementById('hidden-comment');
+const approvalForm = document.getElementById('approval-form');
+const declineBtn = document.getElementById('decline-btn');
+const receipts = {{ receipts|tojson }};  // Backend must pass receipts
+const receiptsModal = document.getElementById('receipts-modal');
+const receiptsList = document.getElementById('receipts-list');
+const viewReceiptsLink = document.getElementById('view-receipts-link');
+const closeReceiptsBtn = document.getElementById('close-receipts');
+
+// Show receipts modal
+viewReceiptsLink.addEventListener('click', function(e) {
+    e.preventDefault();
+    receiptsList.innerHTML = '';
+
+    if (receipts.length === 0) {
+        receiptsList.innerHTML = '<li>No receipts uploaded.</li>';
+    } else {
+        receipts.forEach(r => {
+            const li = document.createElement('li');
+            li.style.marginBottom = '8px';
+            li.innerHTML = `<a href="/final_approver/serve_receipt/${r.id}" target="_blank">${r.category.replace('_',' ').toUpperCase()}</a>`;
+            receiptsList.appendChild(li);
+        });
+    }
+
+    receiptsModal.style.display = 'flex';
+});
+
+closeReceiptsBtn.addEventListener('click', function() {
+    receiptsModal.style.display = 'none';
+});
+
+// Toggle textarea readonly/N/A
+function toggleTextarea() {
+    if (document.querySelector('input[name="comment_decision"]:checked').value === 'NO') {
+        textarea.value = 'N/A';
+        textarea.readOnly = true;
+    } else {
+        textarea.value = '';
+        textarea.readOnly = false;
+    }
+}
+
+radios.forEach(radio => radio.addEventListener('change', toggleTextarea));
+toggleTextarea();
+
+// Before submit
+approvalForm.addEventListener('submit', function() {
+    hiddenComment.value = textarea.value;
+});
+
+// Decline button
+declineBtn.addEventListener('click', function() {
+    hiddenComment.value = textarea.value;
+    const declineInput = document.createElement('input');
+    declineInput.type = 'hidden';
+    declineInput.name = 'decline';
+    declineInput.value = '1';
+    approvalForm.appendChild(declineInput);
+    approvalForm.submit();
+});
+</script>
+
+</body>
+</html>

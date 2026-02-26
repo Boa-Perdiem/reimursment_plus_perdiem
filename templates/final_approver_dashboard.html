@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Approval Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Inter Font (MISSING BEFORE) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* ===== GLOBAL THEME ===== */
+        body {
+            font-family: "Inter", system-ui, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background: #3260d5;;
+        }
+
+        /* ===== HEADER / TOP BAR ===== */
+        header {
+            background: rgba(25, 16, 151, 0.85);
+            backdrop-filter: blur(8px);
+            color: #fff;
+            padding: 18px 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+        }
+
+        header h1 {
+            font-size: 22px;
+            margin: 0;
+            font-weight: 700;
+        }
+
+        .logout {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .logout:hover {
+            text-decoration: underline;
+            color: #ffdede;
+        }
+
+        /* ===== LAYOUT ===== */
+        .container {
+            padding: 12px 0;
+            width: 90vw;
+            max-width: 90%;
+            margin: auto;
+        }
+
+        .card {
+            background: rgba(255,255,255,0.95);
+            border-radius: 20px;
+            padding: 28px 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.25);
+            transition: all 0.3s ease;
+        }
+
+        .card h2 {
+            margin-top: 0;
+            margin-bottom: 16px;
+            color: #3260d5;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        /* ===== TABLE ===== */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        table th,
+        table td {
+            padding: 14px 12px;
+            border-bottom: 1px solid #e0e0e0;
+            text-align: left;
+        }
+
+        table th {
+            background: #f0f3f7;
+            font-weight: 700;
+        }
+
+        /* ===== STATUS COLORS ===== */
+        .status {
+            font-weight: 700;
+        }
+
+        .status.SUBMITTED {
+            color: #cc8400;
+        }
+
+        .status { font-weight:700; }
+        .status.SUBMITTED { color: #cc8400; }
+        .status.APPROVED_BY_REQUESTOR_ADMIN { color: #8c32a7; }
+        .status.APPROVED_BY_INTERMEDIATE_APPROVER { color: #22afd2; }
+        .status.APPROVED_BY_FINAL_APPROVER { color: #28cf6e; }
+        .status.APPROVED_BY_MANAGERIAL_APPROVER { color: #28cf6e; }
+        .status.PROCESSED_BY_FINANCE { color: #1e8e3e; }
+        .status.DECLINED_BY_FINANCE { color: #ff1414; } 
+        .status.DECLINED_BY_MANAGERIAL_APPROVER { color: #ff1414; } 
+        .status.DECLINED_BY_FINAL_APPROVER  { color: #ff1414; }  
+        .status.APPROVED { color: #1e8e3e; }
+        .status.APPROVED {
+            color: #1e8e3e;
+        }
+
+        /* ===== BUTTONS ===== */
+        .btn {
+            background: linear-gradient(135deg, #6a0f1a, #8b1d2c);
+            color: #fff;
+            border: none;
+            padding: 12px 22px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            box-shadow: 0 8px 18px rgba(0,0,0,0.25);
+        }
+
+        .btn-pdf {
+            background: linear-gradient(135deg, #1e8e3e, #0b5d2a);
+        }
+
+        /* ===== MONEY STYLE ===== */
+        .money {
+            font-family: "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            color: #1e3a8a;
+        }
+
+        .btn-review {
+            background: linear-gradient(135deg, #2c7be5, #1a4fa3);
+
+
+        }
+
+        .approved {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+
+            color: #2e7d32;
+            background: #eaf6ee;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .approved::before {
+            content: "✓";
+            width: 18px;
+            height: 18px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            background: #2e7d32;
+            color: #ffffff;
+            border-radius: 50%;
+            font-size: 11px;
+        }
+
+        .declined {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+
+            color: #ffffff;
+            background: #ff0000;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .declined::before {
+            content: "X";
+            width: 18px;
+            height: 18px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            background: #ff1500;
+            color: #ffffff;
+            border-radius: 50%;
+            font-size: 11px;
+        }
+
+        .Delegate { color:white; font-weight:600; cursor:pointer; }
+        .Delegate:hover { text-decoration:underline }
+        .card {
+            background:white; margin:20px auto; padding:20px;
+            border-radius:12px; width:90%;
+        }
+
+        /* ----------------- Delegate Modal Modern UI ----------------- */
+        #delegateModal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 400px;
+            max-width: 90%;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            z-index: 1000;
+            color: #fff;
+            transition: all 0.3s ease;
+        }
+
+        #delegateModal h3 {
+            margin-top: 0;
+            margin-bottom: 1rem;
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+
+        /* Modern dropdown for delegate modal */
+        /* Modern styled dropdown inside delegate modal */
+        #delegateModal select {
+            width: 100%;
+            padding: 0.6rem 1rem;
+            border-radius: 12px;
+            border: none;
+            background: rgba(42, 15, 20, 0.9);  /* dark semi-transparent */
+            color: #fff; /* white text inside select */
+            font-size: 0.95rem;
+            font-weight: 500;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2212%22%20height%3D%227%22%20viewBox%3D%220%200%2012%207%22%20fill%3D%22none%22%20xmlns%3D%22http://www.w3.org/2000/svg%22%3E%3Cpath%20d%3D%22M1%201L6%206L11%201%22%20stroke%3D%22white%22%20stroke-width%3D%222%22/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.8rem center;
+            background-size: 12px 7px;
+        }
+
+        /* Options inside dropdown */
+        #delegateModal select option {
+            background: #6a0f1a; /* dark red matching theme */
+            color: #fff; /* white text */
+        }
+
+        /* Hover and focus effect */
+        #delegateModal select:hover,
+        #delegateModal select:focus {
+            background: rgba(42, 15, 20, 1);
+            outline: none;
+        }
+
+
+
+        #delegateModal button {
+            margin-top: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 12px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        #delegateBtn, #declineBtn {
+            background: linear-gradient(135deg, #6a0f1a, #8b1d2c);
+            color: #fff;
+        }
+        #delegateBtn:hover, #declineBtn:hover { transform: scale(1.05); }
+
+        #acceptBtn, button[onclick="closeDelegateModal()"] {
+            background: linear-gradient(135deg, #2c7be5, #1a4fa3);
+            color: #fff;
+        }
+        #acceptBtn:hover, button[onclick="closeDelegateModal()"]:hover { transform: scale(1.05); }
+
+        #delegateOverlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 999;
+        }
+
+        /* PROFILE DROPDOWN */
+.profile-wrapper {
+    position: relative;
+}
+
+.profile-img {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    cursor: pointer;
+    object-fit: cover;
+    border: 2px solid #ffffff40;
+    transition: 0.3s ease;
+}
+
+.profile-img:hover {
+    transform: scale(1.08);
+    box-shadow: 0 0 15px rgba(255,255,255,0.4);
+}
+
+.profile-dropdown {
+    position: absolute;
+    right: 0;
+    top: 60px;
+    width: 220px;
+    background: #ffffff;
+    border-radius: 14px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+    display: none;
+    animation: fadeDropdown 0.2s ease;
+    overflow: hidden;
+    z-index: 9999;
+}
+
+.profile-dropdown a {
+    display: block;
+    padding: 12px 16px;
+    text-decoration: none;
+    font-size: 14px;
+    color: #333;
+    font-weight: 500;
+    transition: 0.2s;
+}
+
+.profile-dropdown a:hover {
+    background: #f4f4f4;
+}
+
+.profile-info {
+    padding: 14px 16px;
+    background: #f9f9f9;
+}
+
+.logout-item {
+    color: #c73645;
+    font-weight: 600;
+}
+
+@keyframes fadeDropdown {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.profile-wrapper {
+    display: inline-block; /* keep the image inline */
+    cursor: pointer;       /* changes cursor on hover */
+}
+
+.profile-img {
+    width: 80px;
+    height: 50px;
+    border-radius: 8px;         /* optional: rounded corners */
+    object-fit: cover;          /* prevent distortion */
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* smooth effect */
+}
+
+.profile-img:hover {
+    transform: scale(1.2);     /* zoom in 20% */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); /* subtle shadow */
+}
+
+
+ a.logout-item,
+    a[href$="change_password"] {  /* selects your Change Password link */
+        color: #F5F5DC;           /* Cream / Off-White */
+        text-decoration: none;    /* Remove underline */
+        transition: color 0.3s, transform 0.3s; /* smooth hover effects */
+    }
+
+    a.logout-item:hover,
+    a[href$="change_password"]:hover {
+        color: #FFF8E1;           /* Slightly brighter cream on hover */
+        transform: scale(1.1);    /* Zoom slightly on hover */
+    }
+
+    .flash-container {
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+    .flash {
+        padding: 10px 20px;
+        margin: 5px auto;
+        border-radius: 8px;
+        font-weight: bold;
+        width: fit-content;
+        min-width: 200px;
+        color: #fff;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        animation: fadein 0.5s ease;
+    }
+
+    .flash-success { background-color: #4caf50; }   /* green */
+    .flash-error   { background-color: #f44336; }   /* red */
+    .flash-danger  { background-color: #f44336; }   /* red (alternative) */
+    .flash-warning { background-color: #ff9800; }   /* orange */
+    .flash-info    { background-color: #2196f3; }   /* blue */
+
+    @keyframes fadein {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    </style>
+</head>
+
+<body>
+
+<header>
+    {% if current_user.role == "FINAL_APPROVER" %}
+        <h1>Welcome Mr.{{current_user.username}}</h1>
+    {% elif current_user.role in ["MANAGERIAL_APPROVER","MANAGERIAL_DELEGATE"]%}
+        <h1>Welcome Ms.{{current_user.username}}</h1> 
+        <a class="Delegate" onclick="openDelegateModal()">Delegate</a> 
+    {% endif %}
+    <div class="flash-container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+              {% for category, message in messages %}
+                <div class="flash flash-{{ category }}">{{ message }}</div>
+              {% endfor %}
+            {% endif %}
+          {% endwith %}
+    </div>
+    <div class="profile-wrapper" style="position: relative;">
+        <img src="{{ url_for('static', filename='images/profile.png') }}" 
+             style="width: 80px; height: 50px; cursor:pointer;" 
+             class="profile-img" id="profileToggle">
+    
+             <div class="profile-dropdown" id="profileDropdown" style="display:none; position:absolute; right:0; top:60px; background:#000000; padding:15px; border-radius:14px; box-shadow:0 15px 40px rgba(0,0,0,0.3); z-index:1000; width:250px;">
+            <div class="logout" style="margin-bottom:10px;color:#d9d940;">
+                <strong>{{ current_user.username }}</strong><br>
+                <small>{{ current_user.role }}</small>
+            </div>
+            <hr style="margin:10px 0;">
+    
+            <!-- Change Password Link -->
+            <a href="javascript:void(0);" id="showChangePassword" 
+               style="display:block; margin-bottom:10px; color:#FFC857; text-decoration:none;">Change Password</a>
+    
+            <!-- Inline Change Password Form -->
+            <div id="changePasswordForm" style="display:none; margin-bottom:10px;">
+                <form method="POST" action="{{ url_for('auth.change_password') }}">
+                    <div style="margin-bottom:8px;">
+                        <input type="password" name="current_password" placeholder="Current Password" required
+                               style="width:85%; padding:8px; border-radius:8px; border:1px solid #ccc;">
+                    </div>
+                    <div style="margin-bottom:8px;">
+                        <input type="password" name="new_password" placeholder="New Password" required
+                               style="width:85%; padding:8px; border-radius:8px; border:1px solid #ccc;">
+                    </div>
+                    <div style="margin-bottom:8px;">
+                        <input type="password" name="confirm_password" placeholder="Confirm Password" required
+                               style="width:85%; padding:8px; border-radius:8px; border:1px solid #ccc;">
+                    </div>
+                    <button type="submit" class="btn" style="width:85%; background:#6a0f1a; color:#fff; border:none; padding:8px; border-radius:8px;">Update Password</button>
+                </form>
+            </div>
+    
+            <!-- Logout Link -->
+            <a class="logout" href="{{ url_for('auth.logout') }}" 
+               style="display:block; color:#FFC857; text-decoration:none;">Logout</a>
+        </div>
+    </div>
+</header>
+
+<div class="container">
+    <div class="card">
+        <h2>My Assigned Requests</h2>
+
+        {% if perdiems %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Prediem ID</th>
+                    <th>Date of Request</th>
+                    <th>Aquired</th>
+                    <th>Reimbursement Form</th>
+                    <th>Perdiem Form</th>
+                    <th>Comments</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for perdiem in perdiems %}
+                    {% if perdiem.status in ["APPROVED_BY_MANAGERIAL_APPROVER","APPROVED_BY_FINAL_APPROVER", "APPROVED_BY_INTERMEDIATE_APPROVER","PROCESSED_BY_FINANCE","DECLINED_BY_FINANCE","DECLINED_BY_MANAGERIAL_APPROVER","DECLINED_BY_FINAL_APPROVER"] %}
+                        {# For managerial approver: only < 50,000 #}
+                        {% if current_user.role in ["MANAGERIAL_APPROVER","MANAGERIAL_DELEGATE"] and perdiem.birr_amount < 50000 %}
+                            <tr>
+                                <td>{{ perdiem.perdiem_code }}</td>
+                                <td><b class="money"> {{ perdiem.requestor_name }} </b></td>
+                                <td><b class="money"> {{ "{:,.2f}".format(perdiem.birr_amount) }}</b></td>
+                                
+                                <td>
+                                    <a href="{{ url_for('view_reimburs.view_reimburs_db_pdf', request_id=perdiem.id) }}"
+                                    class="btn btn-pdf" target="_blank">View PDF</a>
+                                </td>
+
+                                <td>
+                                    <a href="{{ url_for('view_perdi.view_perdi_db_pdf', request_id=perdiem.id) }}"
+                                    class="btn btn-pdf" target="_blank">View PDF</a>
+                                </td>
+
+                                <td>
+                                    <a href="{{ url_for('adminreview.comments_view', request_id=perdiem.id) }}"
+                                    class="btn btn-review" target="_blank">Comments</a>
+                                </td>
+
+                                <td class="status {{ perdiem.status }}">{{ perdiem.status }}</td>
+
+                                <td>
+                                    {% if perdiem.status == "APPROVED_BY_INTERMEDIATE_APPROVER" %}
+                                        <a href="{{ url_for('managerial_approver.managerial_approver_dashboard', request_id=perdiem.id) }}"
+                                        class="btn btn-review" target="_blank">Review</a>
+                                    {% elif perdiem.status == "DECLINED_BY_MANAGERIAL_APPROVER"%}
+                                        <span class="declined" aria-label="Reviewed and declined">Declined</span>  
+                                  
+                                    {% else %}
+                                        <span class="approved" aria-label="Reviewed and approved">Approved</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endif %}
+
+                        {# For final approver: only 50,000–300,000 #}
+                        {% if current_user.role == "FINAL_APPROVER" and perdiem.birr_amount >= 50000 and perdiem.birr_amount <= 300000 %}
+                            <tr>
+                                <td>{{ perdiem.perdiem_code }}</td>
+                                <td><b class="money"> {{ perdiem.requestor_name }} </b></td>
+                                <td><b class="money"> {{ "{:,.2f}".format(perdiem.birr_amount) }}</b></td>
+                                
+                                <td>
+                                    <a href="{{ url_for('view_reimburs.view_reimburs_db_pdf', request_id=perdiem.id) }}"
+                                    class="btn btn-pdf" target="_blank">View PDF</a>
+                                </td>
+
+                                <td>
+                                    <a href="{{ url_for('view_perdi.view_perdi_db_pdf', request_id=perdiem.id) }}"
+                                    class="btn btn-pdf" target="_blank">View PDF</a>
+                                </td>
+
+                                <td>
+                                    <a href="{{ url_for('adminreview.comments_view', request_id=perdiem.id) }}"
+                                    class="btn btn-review" target="_blank">Comments</a>
+                                </td>
+
+                                <td class="status {{ perdiem.status }}">{{ perdiem.status }}</td>
+
+                                <td>
+                                    {% if perdiem.status == "APPROVED_BY_INTERMEDIATE_APPROVER" %}
+                                        <a href="{{ url_for('final_approver.final_approver_dashboard', request_id=perdiem.id) }}"
+                                        class="btn btn-review" target="_blank">Review</a>
+                                    {% elif perdiem.status == "DECLINED_BY_FINAL_APPROVER" %}
+                                        <span class="declined" aria-label="Reviewed and declined">Declined</span>  
+                                    {% else %}
+                                        <span class="approved" aria-label="Reviewed and approved">Approved</span>                      
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endif %}
+                    {% endif %}    
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+
+    </div>
+</div>
+
+<!-- Delegate Popup -->
+<div id="delegateModal">
+
+    <h3>Delegate Requests</h3>
+
+    <select id="delegateSelect" {% if has_active_or_pending_delegation %}disabled{% endif %}>
+        <option value="">-- Select Approver --</option>
+        {% for user in other_approvers %}
+            {% if user.id != current_user.id %}
+                <option value="{{ user.id }}">{{ user.username }}</option>
+            {% endif %}
+        {% endfor %}
+    </select>
+    
+    <button id="delegateBtn" 
+            style="display:{{ has_active_or_pending_delegation and 'none' or 'inline' }}">
+        Send Request
+    </button>
+    
+    {% if has_active_or_pending_delegation %}
+        <p style="color:#d35400; font-weight:600;">You already have a pending or active delegation</p>
+    {% endif %}
+    
+
+    <hr>
+
+    <h4>Pending Requests</h4>
+    {% if delegator %}
+        <p>
+            <strong>{{ delegator.username }}</strong> wants to delegate districts: {{ current_user.delegated_districts }}
+            <br>
+            <button id="acceptBtn">Accept</button>
+            <button id="declineBtn">Decline</button>
+        </p>
+    {% else %}
+        <p>No pending requests</p>
+    {% endif %}
+
+    <hr>
+
+    <h4>Requests You Sent (Pending)</h4>
+    {% if pending_delegations_sent %}
+        <ul>
+        {% for user in pending_delegations_sent %}
+            <li>
+                Request sent to: <strong>{{ user.username }}</strong> 
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>No pending delegation requests sent.</p>
+    {% endif %}
+
+   <!-- {% if delegated_requests %}
+        <h5>Requests you delegated:</h5>
+        <ul>
+            {% for req in delegated_requests %}
+                <li>
+                    Perdiem ID: {{ req.perdiem_code }} -
+                    Requestor: {{ req.requestor_name }} -
+                    Status: {{ req.status }}
+                    <a href="{{ url_for('view_perdi.view_perdi_db_pdf', request_id=req.id) }}" target="_blank">View PDF</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No requests currently delegated.</p>
+    {% endif %}  -->
+
+
+    <h4>Active Delegation</h4>
+    {% if active_delegator %}
+        <p>Delegation active from user: {{ active_delegator.username }}</p>
+        <button id="terminateBtn">Terminate</button>
+    {% else %}
+        <p>No active delegation</p>
+    {% endif %}
+
+    <h4>Active Delegation (Delegated By You)</h4>
+    {% if active_delegation_from_me %}
+        <p>
+            You delegated to:
+            <strong>{{ active_delegation_from_me.username }}</strong><br>
+            Districts: {{ active_delegation_from_me.delegated_districts }}
+        </p>
+        <button id="terminateBtnFromMe">Terminate</button>
+    {% else %}
+        <p>No active delegation by you</p>
+    {% endif %}
+
+    <button onclick="closeDelegateModal()">Close</button>
+    <div id="delegateMsg"></div>
+</div>
+
+<div id="delegateOverlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.4);"></div>
+
+<script>
+function openDelegateModal(){
+    delegateModal.style.display="block";
+    delegateOverlay.style.display="block";
+}
+function closeDelegateModal(){
+    delegateModal.style.display="none";
+    delegateOverlay.style.display="none";
+}
+
+// Show "Send Request" button if an approver is selected
+delegateSelect.onchange = () => delegateBtn.style.display = delegateSelect.value ? "inline" : "none";
+
+// Send delegation request
+delegateBtn.onclick = () => {
+    fetch("{{ url_for('managerial_approver.delegate_request') }}", {
+        method: "POST",
+        headers: {"Content-Type":"application/x-www-form-urlencoded"},
+        body: "to_user_id=" + delegateSelect.value
+    }).then(r => r.json())
+      .then(d => delegateMsg.innerText = d.success || d.error)
+      .finally(() => location.reload());
+};
+
+// Accept pending delegation
+if(document.getElementById('acceptBtn')){
+    document.getElementById('acceptBtn').onclick = () => {
+        fetch("{{ url_for('managerial_approver.accept_delegation') }}", {method:"POST"})
+        .then(() => location.reload());
+    }
+}
+
+// Decline pending delegation
+if(document.getElementById('declineBtn')){
+    document.getElementById('declineBtn').onclick = () => {
+        fetch("{{ url_for('managerial_approver.decline_delegation') }}", {method:"POST"})
+        .then(() => location.reload());
+    }
+}
+
+// Terminate active delegation
+if(document.getElementById('terminateBtn')){
+    document.getElementById('terminateBtn').onclick = () => {
+        fetch("{{ url_for('managerial_approver.terminate_delegation') }}", {method:"POST"})
+        .then(() => location.reload());
+    }
+}
+
+function terminateDelegation(){
+    fetch("{{ url_for('managerial_approver.terminate_delegation') }}", {
+        method: "POST"
+    }).then(() => location.reload());
+}
+
+const terminateToMe = document.getElementById("terminateBtnToMe");
+if (terminateToMe) {
+    terminateToMe.onclick = terminateDelegation;
+}
+
+const terminateFromMe = document.getElementById("terminateBtnFromMe");
+if (terminateFromMe) {
+    terminateFromMe.onclick = terminateDelegation;
+}
+
+const profileToggle = document.getElementById('profileToggle');
+    const profileDropdown = document.getElementById('profileDropdown');
+    const showChangePassword = document.getElementById('showChangePassword');
+    const changePasswordForm = document.getElementById('changePasswordForm');
+
+    // Toggle dropdown
+    profileToggle.addEventListener('click', () => {
+        profileDropdown.style.display = profileDropdown.style.display === 'block' ? 'none' : 'block';
+        // hide form when dropdown toggled off
+        if(profileDropdown.style.display === 'none') changePasswordForm.style.display = 'none';
+    });
+
+    // Toggle Change Password form
+    showChangePassword.addEventListener('click', () => {
+        changePasswordForm.style.display = changePasswordForm.style.display === 'block' ? 'none' : 'block';
+    });
+
+    // Optional: hide dropdown if clicked outside
+    document.addEventListener('click', (e) => {
+        if (!profileDropdown.contains(e.target) && !profileToggle.contains(e.target)) {
+            profileDropdown.style.display = 'none';
+            changePasswordForm.style.display = 'none';
+        }
+    });
+    
+</script>
+
+</body>
+</html>

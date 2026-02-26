@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Section 4 – Human Resources</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: #f4f6f9;
+            margin: 0;
+            color: #222;
+        }
+
+        header {
+            background: #1f2937;
+            color: white;
+            padding: 16px 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        .logout {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            padding: 28px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 22px;
+            margin-bottom: 26px;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+        }
+
+        .card h2 {
+            margin-top: 0;
+            font-size: 17px;
+        }
+
+        .readonly-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            font-size: 14px;
+        }
+
+        .readonly-grid span {
+            font-weight: 700;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px 20px;
+            max-width: 900px;
+        }
+
+        .form-group {
+            margin-bottom: 10px;
+        }
+
+        .inline-decision {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .inline-decision label {
+            font-weight: 500;
+            margin-left: 8px;
+            margin-right: 12px;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 32px;
+            padding: 6px 8px;
+            font-size: 14px;
+            border-radius: 5px;
+            border: 1px solid #cbd5e1;
+            resize: vertical;
+        }
+
+        textarea[readonly] {
+            background: #f1f5f9;
+            cursor: not-allowed;
+        }
+
+        .btn {
+            background: #1f2937;
+            color: white;
+            border: none;
+            padding: 10px 22px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 12px;
+        }
+
+        .btn:hover {
+            background: #374151;
+        }
+
+        .note {
+            margin-top: 10px;
+            font-size: 13px;
+            color: #555;
+        }
+
+        @media (max-width: 768px) {
+            .form-grid,
+            .readonly-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Section 4 – Human Resources</h1>
+    <a class="logout" href="{{ url_for('auth.logout') }}">Logout</a>
+</header>
+
+<div class="container">
+
+    <div class="card">
+        <h2>Employee Information (Read Only)</h2>
+        <div class="readonly-grid">
+            <div><span>Employee Name:</span> {{ clearance.employee_name }}</div>
+            <div><span>Position Title:</span> {{ clearance.position_title }}</div>
+            <div><span>Place of Assignment:</span> {{ clearance.place_of_assignment }}</div>
+            <div><span>Termination Date:</span> {{ clearance.termination_date }}</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>HR Clearance</h2>
+
+        <form method="POST">
+            <div class="form-grid">
+
+                <!-- ID Card -->
+                <div class="form-group">
+                    <div class="inline-decision">
+                        ID Card:
+                        <label><input type="radio" name="id_card_decision" checked onclick="toggleField('id_card', true)"> Yes</label>
+                        <label><input type="radio" name="id_card_decision" onclick="toggleField('id_card', false)"> No</label>
+                    </div>
+                    <textarea name="id_card" required></textarea>
+                </div>
+
+                <!-- Training Charges -->
+                <div class="form-group">
+                    <div class="inline-decision">
+                        Training Charges:
+                        <label><input type="radio" name="training_charges_decision" checked onclick="toggleField('training_charges', true)"> Yes</label>
+                        <label><input type="radio" name="training_charges_decision" onclick="toggleField('training_charges', false)"> No</label>
+                    </div>
+                    <textarea name="training_charges" required></textarea>
+                </div>
+
+                <!-- Cost Sharing -->
+                <div class="form-group">
+                    <div class="inline-decision">
+                        Cost Sharing:
+                        <label><input type="radio" name="cost_sharing_decision" checked onclick="toggleField('cost_sharing', true)"> Yes</label>
+                        <label><input type="radio" name="cost_sharing_decision" onclick="toggleField('cost_sharing', false)"> No</label>
+                    </div>
+                    <textarea name="cost_sharing" required></textarea>
+                </div>
+
+                <!-- External Guaranty -->
+                <div class="form-group">
+                    <div class="inline-decision">
+                        External Guaranty:
+                        <label><input type="radio" name="external_guaranty_decision" checked onclick="toggleField('external_guaranty', true)"> Yes</label>
+                        <label><input type="radio" name="external_guaranty_decision" onclick="toggleField('external_guaranty', false)"> No</label>
+                    </div>
+                    <textarea name="external_guaranty" required></textarea>
+                </div>
+
+                <!-- Internal Guaranty -->
+                <div class="form-group">
+                    <div class="inline-decision">
+                        Internal Guaranty:
+                        <label><input type="radio" name="internal_guaranty_decision" checked onclick="toggleField('internal_guaranty', true)"> Yes</label>
+                        <label><input type="radio" name="internal_guaranty_decision" onclick="toggleField('internal_guaranty', false)"> No</label>
+                    </div>
+                    <textarea name="internal_guaranty" required></textarea>
+                </div>
+
+                <!-- Exit Interview -->
+                <div class="form-group">
+                    <div class="inline-decision">
+                        Exit Interview:
+                        <label><input type="radio" name="exit_interview_decision" checked onclick="toggleField('exit_interview', true)"> Yes</label>
+                        <label><input type="radio" name="exit_interview_decision" onclick="toggleField('exit_interview', false)"> No</label>
+                    </div>
+                    <textarea name="exit_interview" required></textarea>
+                </div>
+
+            </div>
+
+            <button class="btn" type="submit">Approve Section 4</button>
+        </form>
+
+        <div class="note">
+            HR name, signature, and approval date are recorded automatically.
+        </div>
+    </div>
+
+</div>
+
+<script>
+    function toggleField(fieldName, enable) {
+        const field = document.querySelector(`textarea[name="${fieldName}"]`);
+        if (enable) {
+            if (field.value === "N/A") field.value = "";
+            field.readOnly = false;
+            field.required = true;
+        } else {
+            field.value = "N/A";
+            field.readOnly = true;
+            field.required = false;
+        }
+    }
+</script>
+
+</body>
+</html>

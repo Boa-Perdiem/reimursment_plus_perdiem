@@ -1,0 +1,29 @@
+rows = PerdiemRequest.query.all()
+
+for r in rows:
+    print({
+        "id": r.id,
+        "perdiem_code": r.perdiem_code,
+        "requestor_id": r.requestor_id,
+        "requestor_name": r.requestor_name,
+        "mode": r.mode,
+        "from_": r.from_,
+        "district": r.district,
+        "send_to": r.send_to,
+        "contra": r.contra,
+        "contra_name": r.contra_name,
+        "birr_amount": float(r.birr_amount),
+        "amount_in_words": r.amount_in_words,
+        "reason_for_claim": r.reason_for_claim,
+        "status": r.status,
+        "status_req_admin": r.status_req_admin,
+        "status_inter_apr": r.status_inter_apr,
+        "status_manager_apr": r.status_manager_apr,
+        "status_final_apr": r.status_final_apr,
+        "current_role": r.current_role,
+        "created_at": r.created_at,
+        "pdf_path": r.pdf_path,
+        "r_pdf_path": r.r_pdf_path,
+        "reimburs_form_bytes": len(r.reimburs_form) if r.reimburs_form else None
+        "perdi_form_bytes": len(r.perdi_form) if r.perdi_form else None
+    })

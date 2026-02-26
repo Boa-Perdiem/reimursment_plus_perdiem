@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>BOA Per Diem System – Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #6a0f1a;
+            --primary-light: #8b1d2c;
+            --accent: #c73645;
+            --text-dark: #1f2937;
+            --text-muted: #6b7280;
+            --card-bg: rgba(255, 255, 255, 0.96);
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            height: 100vh;
+            font-family: "Inter", system-ui, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background: linear-gradient(-45deg, #2a050a, #4a0b13, #6a0f1a, #8b1d2c);
+            background-size: 400% 400%;
+            animation: gradientFlow 8s ease infinite;
+        }
+
+        @keyframes gradientFlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .bg-shape { position: absolute; border-radius: 50%; filter: blur(90px); opacity: 0.35; }
+        .shape1 { width: 420px; height: 420px; background: #c73645; top: -140px; left: -140px; }
+        .shape2 { width: 320px; height: 320px; background: #e25563; bottom: -120px; right: -100px; }
+        .shape3 { width: 280px; height: 280px; background: #6a0f1a; top: 45%; right: 18%; }
+
+        .login-wrapper { width: 100%; max-width: 380px; padding: 20px; position: relative; z-index: 2; }
+        .login-card {
+            background: var(--card-bg);
+            border-radius: 18px;
+            padding: 36px 32px;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.45), inset 0 0 0 1px rgba(255,255,255,0.7);
+            backdrop-filter: blur(14px);
+        }
+        .login-card h2 { text-align: center; color: var(--primary); font-size: 22px; font-weight: 700; margin-bottom: 26px; }
+        .form-group { margin-bottom: 18px; }
+        label { display: block; margin-bottom: 6px; font-size: 13px; font-weight: 600; color: var(--text-muted); }
+        input { width: 100%; padding: 12px 14px; border-radius: 10px; border: 1px solid #d1d5db; font-size: 14px; }
+        input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(199,54,69,0.18); }
+        .btn-login { width: 100%; padding: 13px; border: none; border-radius: 12px; background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: #fff; font-size: 15px; font-weight: 600; cursor: pointer; }
+        .btn-login:hover { transform: translateY(-1px); box-shadow: 0 14px 30px rgba(106,15,26,0.5); }
+        .back-link { display: block; text-align: center; margin-top: 14px; font-size: 13px; color: var(--accent); font-weight: 600; text-decoration: none; }
+        .back-link:hover { text-decoration: underline; }
+        .flash-container {
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+    .flash {
+        padding: 10px 20px;
+        margin: 5px auto;
+        border-radius: 8px;
+        font-weight: bold;
+        width: fit-content;
+        min-width: 200px;
+        color: #fff;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        animation: fadein 0.5s ease;
+    }
+
+    .flash-success { background-color: #4caf50; }   /* green */
+    .flash-error   { background-color: #f44336; }   /* red */
+    .flash-danger  { background-color: #f44336; }   /* red (alternative) */
+    .flash-warning { background-color: #ff9800; }   /* orange */
+    .flash-info    { background-color: #2196f3; }   /* blue */
+
+    @keyframes fadein {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    </style>
+</head>
+<body>
+
+<div class="bg-shape shape1"></div>
+<div class="bg-shape shape2"></div>
+<div class="bg-shape shape3"></div>
+
+<div class="login-wrapper">
+    <div class="login-card">
+        <h2>Per Diem System Login</h2>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="flash flash-{{ category }}">{{ message }}</div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        <form method="POST" action="{{ url_for('auth.login') }}">
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" name="username" required autocomplete="username">
+            </div>
+
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" name="password" required autocomplete="current-password">
+            </div>
+
+            <button type="submit" class="btn-login">Sign In</button>
+        </form>
+
+        <!-- LINK TO REGISTER PAGE -->
+        <a href="{{ url_for('auth.register_page') }}" class="back-link">Don't have an account? Create one</a>
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Commenmt View - {{ perdiem.perdiem_code }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #6a0f1a;
+            --primary-light: #8b1d2c;
+            --accent: #c73645;
+            --text-dark: #1f2937;
+            --text-muted: #6b7280;
+            --card-bg: rgba(255, 255, 255, 0.96);
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: "Inter", system-ui, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(-45deg, #2a050a, #4a0b13, #6a0f1a, #8b1d2c);
+            background-size: 400% 400%;
+            animation: gradientFlow 8s ease infinite;
+            display: flex;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        @keyframes gradientFlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* 🔥 IMPORTANT FIX */
+        .bg-shape {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(90px);
+            opacity: 0.35;
+            animation: float 11s infinite alternate ease-in-out;
+            pointer-events: none; /* ✅ allows clicking buttons */
+        }
+
+        .shape1 { width: 420px; height: 420px; background: #c73645; top: -140px; left: -140px; }
+        .shape2 { width: 320px; height: 320px; background: #e25563; bottom: -120px; right: -100px; animation-delay: 3s; }
+        .shape3 { width: 280px; height: 280px; background: #6a0f1a; top: 45%; right: 18%; animation-delay: 5.5s; }
+
+        @keyframes float {
+            from { transform: translate(0,0); }
+            to { transform: translate(40px,-60px); }
+        }
+
+        .card-wrapper {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 900px;
+            background: var(--card-bg);
+            border-radius: 18px;
+            padding: 30px 25px;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.45);
+            backdrop-filter: blur(14px);
+        }
+
+        h2 {
+            text-align: center;
+            color: var(--primary);
+            margin-bottom: 30px;
+        }
+
+        h5 {
+            margin-bottom: 12px;
+            color: var(--primary-light);
+        }
+
+        .back-btn {
+            margin-bottom: 20px;
+            display: inline-block;
+            padding: 8px 16px;
+            background: var(--primary-light);
+            color: #fff;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        .back-btn:hover {
+            background: var(--accent);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+
+        table th, table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            color: var(--text-dark);
+            text-align: left;
+        }
+
+        table th {
+            background-color: rgba(255,255,255,0.85);
+            font-weight: 600;
+        }
+
+        .text-muted {
+            color: var(--text-muted);
+            font-style: italic;
+            margin-bottom: 25px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Background visuals -->
+<div class="bg-shape shape1"></div>
+<div class="bg-shape shape2"></div>
+<div class="bg-shape shape3"></div>
+
+<div class="card-wrapper">
+
+    <!-- Back Button -->
+    <a href="{% if current_user.role in ['FINAL_APPROVER', 'MANAGERIAL_APPROVER'] %}
+                /final_approver_dashboard
+              {% else %}
+                /approval_landing_dashboard
+              {% endif %}"
+       class="back-btn">&larr; Back</a>
+
+    <h2>
+        Comment Review for Request:
+        <strong>{{ perdiem.perdiem_code }}</strong>
+    </h2>
+
+    {% for role, comments in comments_by_role.items() %}
+        {% if role != 'REQUESTOR' %}
+        <div class="role-section">
+            <h5>{{ role.replace('_', ' ').title() }}</h5>
+
+            {% if comments %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>User</th>
+                        <th>Comment</th>
+                        <th>Created At</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in comments %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ c.user.username }}</td>
+                        <td>{{ c.comment }}</td>
+                        <td>{{ c.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+                <p class="text-muted">No comments yet.</p>
+            {% endif %}
+        </div>
+        {% endif %}
+    {% endfor %}
+
+</div>
+
+</body>
+</html>

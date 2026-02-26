@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Super Admin Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+    body {
+        font-family: "Inter", sans-serif;
+        margin: 0;
+        padding: 20px;
+        background: linear-gradient(135deg, #1e3c72, #2a5298);
+        color: #fff;
+    }
+
+    h2 {
+        text-align: center;
+        margin-bottom: 20px;
+        font-size: 28px;
+        color: #ffdd57;
+        text-shadow: 1px 1px 2px #000;
+    }
+
+    .logout {
+        display: inline-block;
+        margin-bottom: 20px;
+        background: #f44336;
+        color: #fff;
+        padding: 8px 16px;
+        text-decoration: none;
+        border-radius: 6px;
+        font-weight: bold;
+        transition: background 0.3s;
+    }
+
+    .logout:hover {
+        background: #d32f2f;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 12px; /* space between rows */
+    }
+
+    th {
+        background-color: #6a0f1a;
+        color: #fff;
+        padding: 12px;
+        text-align: center;
+        border-radius: 6px 6px 0 0;
+    }
+
+    td {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 12px;
+        text-align: center;
+        border-radius: 6px;
+        transition: transform 0.2s, background 0.2s;
+    }
+
+    tr:hover td {
+        transform: scale(1.02);
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+    td small {
+        display: block;
+        color: #ddd;
+        font-size: 12px;
+    }
+
+    .status-badge {
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: bold;
+        color: #fff;
+    }
+
+    .approved { background: #4caf50; }
+    .not-approved { background: #f44336; }
+    .active { background: #2196f3; }
+    .inactive { background: #000000; }
+
+    button {
+        padding: 6px 12px;
+        margin: 2px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: bold;
+        color: #fff;
+        transition: transform 0.2s, opacity 0.2s;
+    }
+
+    button:hover {
+        transform: scale(1.05);
+        opacity: 0.9;
+    }
+
+    .btn-approve { background: #4caf50; }
+    .btn-reject { background: #f44336; }
+    .btn-disable { background: #000000; }
+    .btn-activate { background: #2196f3; }
+    .btn-reset { background: #4a0bc8; }
+
+    .flash-container {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.flash {
+    padding: 10px 20px;
+    margin: 5px auto;
+    border-radius: 8px;
+    font-weight: bold;
+    width: fit-content;
+    min-width: 200px;
+    color: #fff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    animation: fadein 0.5s ease;
+}
+
+.flash-success { background-color: #4caf50; }
+.flash-error   { background-color: #f44336; }
+.flash-danger  { background-color: #f44336; }
+.flash-warning { background-color: #ff9800; }
+.flash-info    { background-color: #2196f3; }
+
+@keyframes fadein {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.profile-wrapper {
+    position: relative;     
+    display: flex;           
+    justify-content: flex-end;
+}
+
+.profile-img {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    cursor: pointer;
+    object-fit: cover;
+    border: 2px solid #ffffff40;
+    transition: 0.3s ease;
+}
+
+.profile-img:hover {
+    transform: scale(1.08);
+    box-shadow: 0 0 15px rgba(255,255,255,0.4);
+}
+
+.profile-dropdown {
+    position: absolute;
+    left: 0;
+    top: 60px;
+    width: 220px;
+    background: #ffffff;
+    border-radius: 14px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+    display: none;
+    animation: fadeDropdown 0.2s ease;
+    overflow: hidden;
+    z-index: 9999;
+}
+
+.profile-dropdown a {
+    display: block;
+    padding: 12px 16px;
+    text-decoration: none;
+    font-size: 14px;
+    color: #333;
+    font-weight: 500;
+    transition: 0.2s;
+}
+
+.profile-dropdown a:hover {
+    background: #f4f4f4;
+}
+
+.profile-info {
+    padding: 14px 16px;
+    background: #f9f9f9;
+}
+
+.logout-item {
+    color: #c73645;
+    font-weight: 600;
+}
+
+@keyframes fadeDropdown {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.profile-wrapper {
+    display: inline-block; /* keep the image inline */
+    cursor: pointer;       /* changes cursor on hover */
+}
+
+.profile-img {
+    width: 80px;
+    height: 50px;
+    border-radius: 8px;         /* optional: rounded corners */
+    object-fit: cover;          /* prevent distortion */
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* smooth effect */
+}
+
+.profile-img:hover {
+    transform: scale(1.2);     /* zoom in 20% */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); /* subtle shadow */
+}
+
+
+ a.logout-item,
+    a[href$="change_password"] {  /* selects your Change Password link */
+        color: #F5F5DC;           /* Cream / Off-White */
+        text-decoration: none;    /* Remove underline */
+        transition: color 0.3s, transform 0.3s; /* smooth hover effects */
+    }
+
+    a.logout-item:hover,
+    a[href$="change_password"]:hover {
+        color: #FFF8E1;           /* Slightly brighter cream on hover */
+        transform: scale(1.1);    /* Zoom slightly on hover */
+    }
+
+</style>
+</head>
+
+<body>
+
+<h2>Super Admin Dashboard</h2>
+{% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="flash flash-{{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+    <div class="profile-wrapper" style="position: relative;">
+        <img src="{{ url_for('static', filename='images/profile.png') }}" 
+             style="width: 80px; height: 50px; cursor:pointer;" 
+             class="profile-img" id="profileToggle">
+    
+             <div class="profile-dropdown" id="profileDropdown" style="display:none; position:absolute; right:0; top:60px; width:250px; padding:20px; border-radius:16px; background: linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05)); border:1px solid rgba(255,255,255,0.3); backdrop-filter: blur(22px) saturate(180%); -webkit-backdrop-filter: blur(22px) saturate(180%); box-shadow: 0 8px 32px rgba(0,0,0,0.25), inset 0 0 20px rgba(255,255,255,0.2); transition: all 0.3s ease; z-index:1000;">
+            <div class="logout" style="margin-bottom:10px;color:#d9d940;">
+                <strong>{{ current_user.username }}</strong><br>
+                <small>{{ current_user.role }}</small>
+            </div>
+            <hr style="margin:10px 0;">
+    
+            <!-- Change Password Link -->
+            <a href="javascript:void(0);" id="showChangePassword" 
+               style="display:block; margin-bottom:10px; color:#FFC857; text-decoration:none;">Change Password</a>
+    
+            <!-- Inline Change Password Form -->
+            <div id="changePasswordForm" style="display:none; margin-bottom:10px;">
+                <form method="POST" action="{{ url_for('auth.change_password') }}">
+                    <div style="margin-bottom:8px;">
+                        <input type="password" name="current_password" placeholder="Current Password" required
+                               style="width:85%; padding:8px; border-radius:8px; border:1px solid #ccc;">
+                    </div>
+                    <div style="margin-bottom:8px;">
+                        <input type="password" name="new_password" placeholder="New Password" required
+                               style="width:85%; padding:8px; border-radius:8px; border:1px solid #ccc;">
+                    </div>
+                    <div style="margin-bottom:8px;">
+                        <input type="password" name="confirm_password" placeholder="Confirm Password" required
+                               style="width:85%; padding:8px; border-radius:8px; border:1px solid #ccc;">
+                    </div>
+                    <button type="submit" class="btn" style="width:85%; background:#6a0f1a; color:#fff; border:none; padding:8px; border-radius:8px;">Update Password</button>
+                </form>
+            </div>
+    
+            <!-- Logout Link -->
+            <a class="logout" href="{{ url_for('auth.logout') }}" 
+               style="display:block; color:#FFC857; text-decoration:none;">Logout</a>
+        </div>
+    </div>
+
+<table>
+    <thead>
+        <tr>
+            <th>Username / Email</th>
+            <th>Role</th>
+            <th>Req Admin</th>
+            <th>District List</th>
+            <th>Approval</th>
+            <th>Active</th>
+            <th>Last Login</th>
+            <th>Failed Attempts</th>
+            <th>Password Changed At</th>
+            <th>Signature</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in users %}
+        <tr>
+            <td>{{ user.username }}<br><small>{{ user.email or '-' }}</small></td>
+            <td>{{ user.role }}</td>
+            <td>{{ user.req_admin or '-' }}</td>
+            <td>{{ user.district_list or '-' }}</td>
+            <td>
+                <span class="status-badge {% if user.is_approved %}approved{% else %}not-approved{% endif %}">
+                    {% if user.is_approved %}Approved{% else %}Pending{% endif %}
+                </span>
+            </td>
+            <td>
+                <span class="status-badge {% if user.is_active %}active{% else %}inactive{% endif %}">
+                    {% if user.is_active %}Active{% else %}Disabled{% endif %}
+                </span>
+            </td>
+            <td>{{ user.last_login or '-' }}</td>
+            <td>{{ user.failed_attempts }}</td>
+            <td>{{ user.password_changed_at or '-' }}</td>
+            {% if user.signature_b64 %}
+            <td>
+                <img src="data:{{ user.signature_mime }};base64,{{ user.signature_b64 }}"
+                     alt="Signature"
+                     style="max-height:50px;
+                            max-width:100px;
+                            filter: brightness(0) invert(1);">
+            </td>
+            {% else %}
+            <td> - </td>
+            {% endif %}
+            <td>
+            {% if user.role not in ["MANAGERIAL_APPROVER", "FINAL_APPROVER", "SUPER_ADMIN"] %}
+            
+                {% if not user.is_approved %}
+                    <form method="POST" action="{{ url_for('super_admin.approve_user', user_id=user.id) }}" style="display:inline">
+                        <button type="submit" class="btn-approve">Approve</button>
+                    </form>
+                    <form method="POST" action="{{ url_for('super_admin.reject_user', user_id=user.id) }}" style="display:inline">
+                        <button type="submit" class="btn-reject">Reject</button>
+                    </form>
+                {% endif %}
+            
+                {% if user.is_active %}
+                    <form method="POST" action="{{ url_for('super_admin.disable_user', user_id=user.id) }}" style="display:inline">
+                        <button type="submit" class="btn-disable">Disable</button>
+                    </form>
+                {% else %}
+                    <form method="POST" action="{{ url_for('super_admin.activate_user', user_id=user.id) }}" style="display:inline">
+                        <button type="submit" class="btn-activate">Activate</button>
+                    </form>
+                {% endif %}
+
+                <form method="POST" action="{{ url_for('super_admin.force_reset_password', user_id=user.id) }}" style="display:inline">
+                    <button type="submit" class="btn-reset">Force Reset</button>
+                </form>
+            {% else %}
+            {% if not user.is_approved %}
+                    <form method="POST" action="{{ url_for('super_admin.approve_user', user_id=user.id) }}" style="display:inline">
+                        <button type="submit" class="btn-approve">Approve</button>
+                    </form>
+                    <form method="POST" action="{{ url_for('super_admin.reject_user', user_id=user.id) }}" style="display:inline">
+                        <button type="submit" class="btn-reject">Reject</button>
+                    </form>
+            {% endif %}
+
+            {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<script>
+    const profileToggle = document.getElementById('profileToggle');
+        const profileDropdown = document.getElementById('profileDropdown');
+        const showChangePassword = document.getElementById('showChangePassword');
+        const changePasswordForm = document.getElementById('changePasswordForm');
+    
+        // Toggle dropdown
+        profileToggle.addEventListener('click', () => {
+            profileDropdown.style.display = profileDropdown.style.display === 'block' ? 'none' : 'block';
+            // hide form when dropdown toggled off
+            if(profileDropdown.style.display === 'none') changePasswordForm.style.display = 'none';
+        });
+    
+        // Toggle Change Password form
+        showChangePassword.addEventListener('click', () => {
+            changePasswordForm.style.display = changePasswordForm.style.display === 'block' ? 'none' : 'block';
+        });
+    
+        // Optional: hide dropdown if clicked outside
+        document.addEventListener('click', (e) => {
+            if (!profileDropdown.contains(e.target) && !profileToggle.contains(e.target)) {
+                profileDropdown.style.display = 'none';
+                changePasswordForm.style.display = 'none';
+            }
+        });
+        
+    </script>
+
+</body>
+</html>
+
+
+ 
+

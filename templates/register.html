@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>BOA Per Diem System – Create Account</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+:root{
+--primary:#6a0f1a;
+--primary-light:#8b1d2c;
+--accent:#c73645;
+--danger:#e11d48;
+--success:#16a34a;
+}
+
+*{box-sizing:border-box;}
+
+body{
+margin:0;
+font-family:'Inter',sans-serif;
+background:linear-gradient(-45deg,#2a050a,#4a0b13,#6a0f1a,#8b1d2c);
+background-size:400% 400%;
+animation:gradientFlow 10s ease infinite;
+display:flex;
+justify-content:center;
+align-items:center;
+min-height:100vh;
+padding:20px;
+}
+
+@keyframes gradientFlow{
+0%{background-position:0% 50%;}
+50%{background-position:100% 50%;}
+100%{background-position:0% 50%;}
+}
+
+.card{
+width:100%;
+max-width:900px;
+background:rgba(255,255,255,0.97);
+backdrop-filter:blur(20px);
+border-radius:25px;
+padding:45px 50px;
+box-shadow:0 50px 100px rgba(0,0,0,0.45);
+animation:fadeIn .7s ease;
+}
+
+@keyframes fadeIn{
+from{opacity:0;transform:translateY(20px);}
+to{opacity:1;transform:translateY(0);}
+}
+
+h2{
+text-align:center;
+margin-bottom:35px;
+color:var(--primary);
+font-weight:800;
+letter-spacing:.5px;
+}
+
+.grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:25px;
+}
+
+.full{ grid-column:1/-1; }
+
+.form-group{ margin-bottom:10px; }
+
+label{
+font-size:13px;
+font-weight:600;
+margin-bottom:6px;
+display:block;
+}
+
+.required{
+color:var(--danger);
+font-size:11px;
+margin-left:3px;
+}
+
+input,select{
+width:100%;
+padding:14px 16px;
+border-radius:14px;
+border:1px solid #ddd;
+font-size:14px;
+transition:all .25s ease;
+background:white;
+}
+
+input:focus,select:focus{
+outline:none;
+border-color:var(--accent);
+box-shadow:0 0 0 4px rgba(199,54,69,.15);
+transform:translateY(-2px);
+}
+
+.password-strength{
+height:6px;
+border-radius:6px;
+margin-top:6px;
+background:#ddd;
+overflow:hidden;
+}
+
+.strength-bar{
+height:100%;
+width:0%;
+transition:.3s;
+}
+
+.error-text{
+font-size:12px;
+color:var(--danger);
+display:none;
+margin-top:4px;
+}
+
+button{
+width:100%;
+padding:16px;
+border:none;
+border-radius:18px;
+font-weight:700;
+font-size:15px;
+cursor:pointer;
+background:linear-gradient(135deg,var(--primary),var(--primary-light));
+color:white;
+transition:.3s;
+margin-top:15px;
+}
+
+button:hover{
+transform:translateY(-3px);
+box-shadow:0 25px 50px rgba(106,15,26,.45);
+}
+
+/* DISTRICT TAGS */
+#district-container span{
+display:inline-block;
+margin:5px;
+padding:7px 14px;
+border-radius:20px;
+background:var(--accent);
+color:white;
+font-size:12px;
+cursor:pointer;
+}
+
+.flash-container {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.flash {
+    padding: 10px 20px;
+    margin: 5px auto;
+    border-radius: 8px;
+    font-weight: bold;
+    width: fit-content;
+    min-width: 200px;
+    color: #fff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    animation: fadein 0.5s ease;
+}
+
+.flash-success { background-color: #4caf50; }
+.flash-error   { background-color: #f44336; }
+.flash-danger  { background-color: #f44336; }
+.flash-warning { background-color: #ff9800; }
+.flash-info    { background-color: #2196f3; }
+
+@keyframes fadein {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* SIGNATURE SIDE BY SIDE */
+.signature-wrapper{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:25px;
+margin-top:10px;
+}
+
+.signature-box{
+background:#f9f9f9;
+padding:20px;
+border-radius:18px;
+text-align:center;
+border:1px solid #eee;
+}
+
+.signature-box h4{
+margin-bottom:15px;
+color:var(--primary);
+font-size:14px;
+}
+
+canvas{
+border-radius:14px;
+border:2px dashed #ccc;
+background:white;
+width:100%;
+}
+
+#signature-preview{
+margin-top:10px;
+max-height:120px;
+border-radius:10px;
+display:none;
+border:1px solid #ccc;
+}
+
+@media(max-width:750px){
+.grid{ grid-template-columns:1fr; }
+.signature-wrapper{ grid-template-columns:1fr; }
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+<h2>Create Account</h2>
+<div class="flash-container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="flash flash-{{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+    </div>
+
+<form method="POST" action="{{ url_for('auth.create_account') }}" enctype="multipart/form-data">
+
+<div class="grid">
+
+<div class="form-group">
+<label>Username <span class="required">*</span></label>
+<input id="username" name="username" required>
+</div>
+
+<div class="form-group">
+<label>Email <span class="required">*</span></label>
+<input id="email" name="email" required>
+</div>
+
+<div class="form-group">
+<label>Password <span class="required">*</span></label>
+<input type="password" id="password" name="password" required>
+<div class="password-strength"><div class="strength-bar" id="strengthBar"></div></div>
+</div>
+
+<div class="form-group">
+<label>Confirm Password <span class="required">*</span></label>
+<input type="password" id="confirmPassword" required>
+<div id="passwordError" class="error-text">Passwords do not match</div>
+</div>
+
+<div class="form-group">
+<label>Role <span class="required">*</span></label>
+<select name="role" id="roleSelect" required>
+<option value="">Select Role</option>
+<option value="REQUESTOR">Requestor</option>
+<option value="REQUESTOR_ADMIN">Requestor Admin</option>
+<option value="INTERMEDIATE_APPROVER">Intermediate Approver</option>
+<option value="FINANCE">Finance</option>
+
+{% if not managerial_approver_exists %}
+<option value="MANAGERIAL_APPROVER">Managerial Approver</option>
+{% endif %}
+
+{% if not managerial_delegate_approver_exists %}
+<option value="MANAGERIAL_DELEGATE">Managerial Delegate</option>
+{% endif %}
+
+{% if not final_approver_exists %}
+<option value="FINAL_APPROVER">Final Approver</option>
+{% endif %}
+</select>
+<!-- Fixed users for MANAGERIAL_APPROVER and FINAL_APPROVER -->
+<input type="hidden" name="fixed_managerial_username" id="fixed_managerial_username" value="Marta Zewdie">
+<input type="hidden" name="fixed_managerial_email" id="fixed_managerial_email" value="marta.zewdie@bankofabyssinia.com">
+
+<input type="hidden" name="fixed_managerial_delegate_username" id="fixed_managerial_delegate_username" value="Konjit Belay">
+<input type="hidden" name="fixed_managerial_delegate_email" id="fixed_managerial_delegate_email" value="konjit.belay@bankofabyssinia.com">
+
+<input type="hidden" name="fixed_final_username" id="fixed_final_username" value="Bantalem Taye">
+<input type="hidden" name="fixed_final_email" id="fixed_final_email" value="bantalem.taye@bankofabyssinia.com">
+</div>
+
+<!-- REQUESTOR ADMIN -->
+<div class="form-group" id="reqAdminDiv" style="display:none;">
+<label>Select Requestor Admin <span class="required">*</span></label>
+<select name="req_admin">
+{% for admin in requestor_admins %}
+<option value="{{ admin.username }}">{{ admin.username }}</option>
+{% endfor %}
+</select>
+</div>
+
+<!-- DISTRICT -->
+<div class="form-group" id="districtDiv" style="display:none;">
+<label>Select District <span class="required">*</span></label>
+<select id="districtSelect">
+{% for district in districts %}
+<option value="{{ district }}">{{ district }}</option>
+{% endfor %}
+</select>
+<button type="button" id="addDistrictBtn" style="margin-top:8px;">Add District</button>
+<div id="district-container"></div>
+<input type="hidden" name="district_list" id="district_list">
+</div>
+
+<!-- SIGNATURE -->
+<div class="form-group full">
+<label>Signature <span class="required">*</span></label>
+
+<div class="signature-wrapper">
+
+<div class="signature-box">
+<h4>Import Signature</h4>
+<input type="file" name="signature" accept="image/png,image/jpeg" id="signatureInput">
+<img id="signature-preview">
+</div>
+
+<div class="signature-box">
+<h4>Draw Signature</h4>
+<canvas id="signatureCanvas" width="500" height="160"></canvas>
+<button type="button" id="clearCanvasBtn" style="background:#e11d48;margin-top:10px;">Clear</button>
+<input type="hidden" name="drawn_signature" id="drawn_signature">
+</div>
+
+</div>
+</div>
+
+</div>
+
+<button type="submit">Create Account</button>
+</form>
+</div>
+
+<script>
+// ================= USERNAME (ALLOW SPACES) =================
+document.getElementById("username").addEventListener("input",function(){
+let value=this.value;
+value=value.split(" ").map(word=>{
+if(word.length===0) return "";
+return word.charAt(0).toUpperCase()+word.slice(1);
+}).join(" ");
+this.value=value;
+
+let emailPrefix=value.toLowerCase().replace(/ /g,".");
+if(emailPrefix){
+document.getElementById("email").value=emailPrefix+"@bankofabyssinia.com";
+}
+});
+
+
+// ================= PASSWORD STRENGTH =================
+const password=document.getElementById("password");
+const strengthBar=document.getElementById("strengthBar");
+
+password.addEventListener("input",function(){
+let val=this.value;
+let strength=0;
+
+if(/[A-Z]/.test(val)) strength+=25;
+if(/[0-9]/.test(val)) strength+=25;
+if(/[^A-Za-z0-9]/.test(val)) strength+=25;
+if(val.length>=8) strength+=25;
+
+strengthBar.style.width=strength+"%";
+
+if(strength<50) strengthBar.style.background="#e11d48";
+else if(strength<75) strengthBar.style.background="#f59e0b";
+else strengthBar.style.background="#16a34a";
+});
+
+
+// ================= CONFIRM PASSWORD CHECK =================
+const confirmPassword=document.getElementById("confirmPassword");
+const errorText=document.getElementById("passwordError");
+
+confirmPassword.addEventListener("input",function(){
+errorText.style.display =
+(password.value!==confirmPassword.value)?"block":"none";
+});
+
+
+// ================= ROLE LOGIC =================
+
+document.getElementById("roleSelect").addEventListener("change", function() {
+    let role = this.value;
+
+    // Show/hide other sections
+    document.getElementById("reqAdminDiv").style.display = role === "REQUESTOR" ? "block" : "none";
+    document.getElementById("districtDiv").style.display = role === "INTERMEDIATE_APPROVER" ? "block" : "none";
+
+    // FIXED USERS
+    const usernameInput = document.getElementById("username");
+    const emailInput = document.getElementById("email");
+
+    if(role === "MANAGERIAL_APPROVER"){
+        usernameInput.value = document.getElementById("fixed_managerial_username").value;
+        emailInput.value = document.getElementById("fixed_managerial_email").value;
+        usernameInput.readOnly = true;
+        emailInput.readOnly = true;
+    } 
+    else if(role === "MANAGERIAL_DELEGATE"){
+        usernameInput.value = document.getElementById("fixed_managerial_delegate_username").value;
+        emailInput.value = document.getElementById("fixed_managerial_delegate_email").value;
+        usernameInput.readOnly = true;
+        emailInput.readOnly = true;
+    }else if(role === "FINAL_APPROVER"){
+        usernameInput.value = document.getElementById("fixed_final_username").value;
+        emailInput.value = document.getElementById("fixed_final_email").value;
+        usernameInput.readOnly = true;
+        emailInput.readOnly = true;
+    } else {
+        // For all other roles, allow input
+        //usernameInput.value = "";
+        //emailInput.value = "";
+        usernameInput.readOnly = false;
+        emailInput.readOnly = false;
+    }
+});
+
+
+// ================= DISTRICT LOGIC =================
+let districtList=[];
+const container=document.getElementById("district-container");
+const hiddenInput=document.getElementById("district_list");
+
+document.getElementById("addDistrictBtn").addEventListener("click",function(){
+const val=document.getElementById("districtSelect").value;
+if(val && !districtList.includes(val)){
+districtList.push(val);
+updateDistricts();
+}
+});
+
+function updateDistricts(){
+container.innerHTML="";
+districtList.forEach(d=>{
+const span=document.createElement("span");
+span.textContent=d+" ✖";
+span.onclick=()=>removeDistrict(d);
+container.appendChild(span);
+});
+hiddenInput.value=districtList.join(",");
+}
+
+function removeDistrict(d){
+districtList=districtList.filter(x=>x!==d);
+updateDistricts();
+}
+
+
+// ================= SIGNATURE PREVIEW =================
+document.getElementById("signatureInput").addEventListener("change",function(){
+const file=this.files[0];
+if(file){
+const reader=new FileReader();
+reader.onload=e=>{
+const img=document.getElementById("signature-preview");
+img.src=e.target.result;
+img.style.display="block";
+};
+reader.readAsDataURL(file);
+}
+});
+
+
+// ================= CANVAS FIX (PROPER MAPPING) =================
+const canvas=document.getElementById("signatureCanvas");
+const ctx=canvas.getContext("2d");
+
+let drawing=false;
+
+// FIX CANVAS DPI + SCALING
+function resizeCanvas(){
+const rect=canvas.getBoundingClientRect();
+canvas.width=rect.width;
+canvas.height=rect.height;
+ctx.lineWidth=2;
+ctx.lineCap="round";
+}
+
+resizeCanvas();
+window.addEventListener("resize",resizeCanvas);
+
+// GET CORRECT MOUSE POSITION
+function getMousePos(e){
+const rect=canvas.getBoundingClientRect();
+return {
+x:(e.clientX-rect.left),
+y:(e.clientY-rect.top)
+};
+}
+
+canvas.addEventListener("mousedown",(e)=>{
+drawing=true;
+const pos=getMousePos(e);
+ctx.beginPath();
+ctx.moveTo(pos.x,pos.y);
+});
+
+canvas.addEventListener("mouseup",()=>{
+drawing=false;
+ctx.beginPath();
+});
+
+canvas.addEventListener("mousemove",(e)=>{
+if(!drawing) return;
+const pos=getMousePos(e);
+ctx.lineTo(pos.x,pos.y);
+ctx.stroke();
+ctx.beginPath();
+ctx.moveTo(pos.x,pos.y);
+});
+
+
+// TOUCH SUPPORT
+canvas.addEventListener("touchstart",(e)=>{
+e.preventDefault();
+drawing=true;
+const rect=canvas.getBoundingClientRect();
+const touch=e.touches[0];
+ctx.beginPath();
+ctx.moveTo(touch.clientX-rect.left,touch.clientY-rect.top);
+});
+
+canvas.addEventListener("touchmove",(e)=>{
+e.preventDefault();
+if(!drawing) return;
+const rect=canvas.getBoundingClientRect();
+const touch=e.touches[0];
+ctx.lineTo(touch.clientX-rect.left,touch.clientY-rect.top);
+ctx.stroke();
+ctx.beginPath();
+ctx.moveTo(touch.clientX-rect.left,touch.clientY-rect.top);
+});
+
+canvas.addEventListener("touchend",()=>{
+drawing=false;
+ctx.beginPath();
+});
+
+
+// CLEAR
+document.getElementById("clearCanvasBtn").addEventListener("click",()=>{
+ctx.clearRect(0,0,canvas.width,canvas.height);
+});
+
+
+// SUBMIT
+document.querySelector("form").addEventListener("submit",function(){
+const drawnData=canvas.toDataURL("image/png");
+if(drawnData.length>1000){
+document.getElementById("drawn_signature").value=drawnData;
+document.getElementById("signatureInput").removeAttribute("required");
+}
+});
+
+</script>
+
+</body>
+</html>

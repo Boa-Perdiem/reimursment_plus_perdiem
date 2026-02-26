@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Review Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: #f4f6f9;
+            margin: 0;
+            color: #222;
+        }
+
+        header {
+            background: #1f2937;
+            color: white;
+            padding: 16px 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        .logout {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            padding: 28px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 22px;
+            margin-bottom: 26px;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+        }
+
+        .card h2 {
+            margin-top: 0;
+            font-size: 17px;
+        }
+
+        .readonly-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            font-size: 14px;
+        }
+
+        .readonly-grid span {
+            font-weight: 700;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #e5e7eb;
+        }
+
+        .approved {
+            color: green;
+            font-weight: bold;
+        }
+
+        .pending {
+            color: orange;
+            font-weight: bold;
+        }
+
+        .btn {
+            background: #1f2937;
+            color: white;
+            border: none;
+            padding: 10px 22px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 12px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            background: #374151;
+        }
+
+        @media (max-width: 768px) {
+            .readonly-grid {
+                grid-template-columns: 1fr;
+            }
+
+            table, th, td {
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Admin Review Dashboard</h1>
+    <a class="logout" href="{{ url_for('auth.logout') }}">Logout</a>
+</header>
+
+<div class="container">
+
+    <div class="card">
+        <h2>Employee Clearance Review</h2>
+
+        <div class="readonly-grid">
+            <div><span>Employee Name:</span> {{ clearance.employee_name }}</div>
+            <div><span>Position Title:</span> {{ clearance.position_title }}</div>
+            <div><span>Place of Assignment:</span> {{ clearance.place_of_assignment }}</div>
+            <div><span>Termination Date:</span> {{ clearance.termination_date }}</div>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Section</th>
+                    <th>Status</th>
+                    <th>Description / Comments</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Section 5 Warehouse</td>
+                    <td>
+                        {% if clearance.section5_approval %}
+                            {% if clearance.section5_approval.status_s5 == "APPROVED" %}
+                                <span class="approved">APPROVED</span>
+                            {% else %}
+                                <span class="pending">{{ clearance.section5_approval.status_s5 }}</span>
+                            {% endif %}
+                        {% else %}
+                            <span class="pending">PENDING</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ clearance.section5_approval.review or '-' }}</td>
+                </tr>
+                <tr>
+                    <td>Section 5 Transport</td>
+                    <td>
+                        {% if clearance.section5_transport_approval %}
+                            {% if clearance.section5_transport_approval.status_s5trans == "APPROVED" %}
+                                <span class="approved">APPROVED</span>
+                            {% else %}
+                                <span class="pending">{{ clearance.section5_transport_approval.status_s5trans }}</span>
+                            {% endif %}
+                        {% else %}
+                            <span class="pending">PENDING</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ clearance.section5_transport_approval.review or '-' }}</td>
+                </tr>
+                <tr>
+                    <td>Section 5 Credit Management</td>
+                    <td>
+                        {% if clearance.section5_creditM_approval %}
+                            {% if clearance.section5_creditM_approval.status_s5CreditM == "APPROVED" %}
+                                <span class="approved">APPROVED</span>
+                            {% else %}
+                                <span class="pending">{{ clearance.section5_creditM_approval.status_s5CreditM}}</span>
+                            {% endif %}
+                        {% else %}
+                            <span class="pending">PENDING</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ clearance.section5_creditM_approval.review or '-' }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <a href="{{ url_for('dashboard.index') }}" class="btn">Back to Clearance List</a>
+    </div>
+
+</div>
+
+</body>
+</html>

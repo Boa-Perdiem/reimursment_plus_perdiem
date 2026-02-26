@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Section 3 – Loans</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: #f4f6f9;
+            margin: 0;
+            color: #222;
+        }
+
+        header {
+            background: #1f2937;
+            color: white;
+            padding: 16px 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        .logout {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            padding: 28px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 22px;
+            margin-bottom: 26px;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+        }
+
+        .card h2 {
+            margin-top: 0;
+            font-size: 17px;
+            color: #111;
+        }
+
+        .readonly-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            font-size: 14px;
+        }
+
+        .readonly-grid span {
+            font-weight: 700;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 4px;
+            font-size: 14px;
+        }
+
+        .decision {
+            margin-bottom: 4px;
+        }
+
+        .decision label {
+            display: inline;
+            font-weight: 500;
+            margin-right: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 10px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px 20px;
+            max-width: 900px;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 32px;
+            padding: 6px 8px;
+            font-size: 14px;
+            border-radius: 5px;
+            border: 1px solid #cbd5e1;
+            resize: vertical;
+        }
+
+        textarea[readonly] {
+            background: #f1f5f9;
+            cursor: not-allowed;
+        }
+
+        .btn {
+            background: #1f2937;
+            color: white;
+            border: none;
+            padding: 10px 22px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 12px;
+        }
+
+        .btn:hover {
+            background: #374151;
+        }
+
+        .note {
+            margin-top: 10px;
+            font-size: 13px;
+            color: #555;
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            .readonly-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Section 3 – Loans</h1>
+    <a class="logout" href="{{ url_for('auth.logout') }}">Logout</a>
+</header>
+
+<div class="container">
+
+    <div class="card">
+        <h2>Employee Information (Read Only)</h2>
+
+        <div class="readonly-grid">
+            <div><span>Employee Name:</span> {{ clearance.employee_name }}</div>
+            <div><span>Position Title:</span> {{ clearance.position_title }}</div>
+            <div><span>Place of Assignment:</span> {{ clearance.place_of_assignment }}</div>
+            <div><span>Termination Date:</span> {{ clearance.termination_date }}</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>Loans Clearance</h2>
+
+        <form method="POST">
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label>Personal Loan 1 (8 month of Salary):</label>
+                    <div class="decision">
+                        <label><input type="radio" name="personal_loan_1_decision" checked onclick="toggleField('personal_loan_1', true)"> Yes</label>
+                        <label><input type="radio" name="personal_loan_1_decision" onclick="toggleField('personal_loan_1', false)"> No</label>
+                    </div>
+                    <textarea name="personal_loan_1" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Personal Loan 2 (With Collateral):</label>
+                    <div class="decision">
+                        <label><input type="radio" name="personal_loan_2_decision" checked onclick="toggleField('personal_loan_2', true)"> Yes</label>
+                        <label><input type="radio" name="personal_loan_2_decision" onclick="toggleField('personal_loan_2', false)"> No</label>
+                    </div>
+                    <textarea name="personal_loan_2" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Housing Loan:</label>
+                    <div class="decision">
+                        <label><input type="radio" name="housing_loan_decision" checked onclick="toggleField('housing_loan', true)"> Yes</label>
+                        <label><input type="radio" name="housing_loan_decision" onclick="toggleField('housing_loan', false)"> No</label>
+                    </div>
+                    <textarea name="housing_loan" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Vehicle Loan:</label>
+                    <div class="decision">
+                        <label><input type="radio" name="vehicle_loan_decision" checked onclick="toggleField('vehicle_loan', true)"> Yes</label>
+                        <label><input type="radio" name="vehicle_loan_decision" onclick="toggleField('vehicle_loan', false)"> No</label>
+                    </div>
+                    <textarea name="vehicle_loan" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Advance Salary:</label>
+                    <div class="decision">
+                        <label><input type="radio" name="advance_salary_decision" checked onclick="toggleField('advance_salary', true)"> Yes</label>
+                        <label><input type="radio" name="advance_salary_decision" onclick="toggleField('advance_salary', false)"> No</label>
+                    </div>
+                    <textarea name="advance_salary" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Others (Miscellaneous Receivable):</label>
+                    <div class="decision">
+                        <label><input type="radio" name="miscellaneous_receivable_decision" checked onclick="toggleField('miscellaneous_receivable', true)"> Yes</label>
+                        <label><input type="radio" name="miscellaneous_receivable_decision" onclick="toggleField('miscellaneous_receivable', false)"> No</label>
+                    </div>
+                    <textarea name="miscellaneous_receivable" required></textarea>
+                </div>
+
+            </div>
+
+            <button class="btn" type="submit">
+                Approve Section 3
+            </button>
+        </form>
+
+        <div class="note">
+            Approver name, signature, and approval date are recorded automatically.
+        </div>
+    </div>
+
+</div>
+
+<script>
+    function toggleField(fieldName, enable) {
+        const field = document.querySelector(`textarea[name="${fieldName}"]`);
+
+        if (enable) {
+            if (field.value === "N/A") field.value = "";
+            field.readOnly = false;
+            field.required = true;
+        } else {
+            field.value = "N/A";
+            field.readOnly = true;
+            field.required = false;
+        }
+    }
+</script>
+
+</body>
+</html>

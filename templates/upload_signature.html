@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Upload Signature</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            width: 350px;
+            text-align: center;
+        }
+
+        input[type="file"] {
+            margin: 15px 0;
+        }
+
+        button {
+            padding: 10px 15px;
+            border: none;
+            background: #6a0f1a;
+            color: white;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #8b1d2c;
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>Upload Your Signature</h2>
+
+    <form method="POST" enctype="multipart/form-data">
+        <input type="file" name="signature" accept="image/png,image/jpeg" required>
+        <br>
+        <button type="submit">Upload</button>
+    </form>
+</div>
+
+</body>
+</html>
