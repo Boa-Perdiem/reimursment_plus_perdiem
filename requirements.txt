@@ -71,7 +71,7 @@ openpyxl==3.1.5
 opt-einsum==3.3.0
 packaging==26.0
 paddleocr==2.7.0.3
-paddlepaddle==2.6.2
+paddlepaddle==2.6.2.post101
 pandas==2.3.3
 pdf2docx==0.5.8
 pillow==12.1.0
@@ -117,4 +117,5 @@ urllib3==2.6.3
 validators==0.35.0
 visualdl==2.5.3
 Werkzeug==3.1.5
+
 
