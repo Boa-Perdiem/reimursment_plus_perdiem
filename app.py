@@ -73,9 +73,28 @@ def create_app():
     app.register_blueprint(mailer_bp)
     
 
-    # ---------------- CREATE DB ----------------
+        # ---------------- CREATE DB + DEFAULT SUPER ADMIN ----------------
     with app.app_context():
         db.create_all()
+
+        from models import User
+
+        existing_admin = User.query.filter_by(username="superadmin").first()
+
+        if not existing_admin:
+            user = User(
+                username="superadmin",
+                email="superadmin@example.com",
+                role="SUPER_ADMIN",
+                is_approved=True
+            )
+            user.set_password("StrongPassword123!")
+
+            db.session.add(user)
+            db.session.commit()
+            print("✅ Super admin created")
+        else:
+            print("ℹ️ Super admin already exists")
 
     return app
 
