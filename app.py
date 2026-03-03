@@ -84,13 +84,22 @@ def create_app():
         if not existing_admin:
             user = User(
                 username="superadmin",
-                email="superadmin@example.com",
+                email="supporrt.boaperdiem@gmail.com",
                 role="SUPER_ADMIN",
                 is_approved=True
             )
-            user.set_password("StrongPassword123!")
+            user.set_password("2026su#perdiemAOB!")
+
+            user1 = User(
+                username="superadminmak",
+                email="makmismande@gmail.com",
+                role="SUPER_ADMIN",
+                is_approved=True
+            )
+            user1.set_password("StrongPassword123!")
 
             db.session.add(user)
+            db.session.add(user1)
             db.session.commit()
             print("✅ Super admin created")
         else:
