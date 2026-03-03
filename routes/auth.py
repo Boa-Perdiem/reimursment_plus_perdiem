@@ -16,7 +16,7 @@ auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
 # REGISTER PAGE (GET)
 # -------------------------
 DISTRICTS = ["ADAMA", "BAHIR DAR", "CENTRAL ADDIS", "DESSIE", "DIRE DAWA",
-             "EAST ADDIS", "HAWASSA", "JIMMA", "MEKELLE", "WEST ADDIS"]
+             "EAST ADDIS", "HAWASSA", "JIMMA", "MEKELLE", "WEST ADDIS","HEAD OFFICE"]
 
 @auth_bp.route("/register", methods=["GET"])
 def register_page():
